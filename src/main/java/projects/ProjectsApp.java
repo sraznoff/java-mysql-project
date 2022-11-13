@@ -11,6 +11,7 @@ import projects.service.ProjectService;
 
 public class ProjectsApp {
 	private ProjectService projectService = new ProjectService();
+	private Project currentProject;
 	private void processUserSelections() {
 		boolean done = false; 
 		while(!done) {
@@ -23,6 +24,13 @@ public class ProjectsApp {
 				case 1:
 					createProject();
 					break;
+				case 2:
+					listProjects();
+					break;
+				case 3:
+					selectProject();
+					break;
+			
 				default:
 					System.out.println("\n "+selection+" is not a valid selection. Try Again.");
 				
@@ -33,6 +41,26 @@ public class ProjectsApp {
 				System.out.println(exc);
 			}
 		}
+	}
+
+		private void selectProject() {
+		listProjects();
+		Integer projectID = getIntInput("Enter a project ID to select a project");
+		currentProject = null;
+		currentProject = projectService.fetchProjectByID(projectID);
+	//	if(Objects.isNull(currentProject)) {
+	//		System.out.println("Invalid project Id Selected.");
+	//	}
+	}
+
+
+
+		private void listProjects() {
+		List<Project> projects = projectService.fetchAllProjects();
+		System.out.println("\nProjects:");
+		projects.forEach(project -> System.out.println(" "+project.getProjectId()+": "+project.getProjectName()));
+
+		
 	}
 
 		private void createProject() {
@@ -58,7 +86,7 @@ public class ProjectsApp {
 				try {
 					return new BigDecimal(input).setScale(2);
 				} catch (NumberFormatException e) {
-					throw new DbException(input +" is not a decimal valid number.");
+					throw new DbException(input +" is not a valid decimal number.");
 					
 				}
 			}
@@ -102,11 +130,18 @@ public class ProjectsApp {
 			for(String operation : operations) {
 				System.out.println("   "+operation	);
 			}
+			if(Objects.isNull(currentProject)) {
+				System.out.println("\nYou are not working with a project.");
+			}else {
+				System.out.println("\nYou are working with a project: " + currentProject);
+			}
 		}
 
 	//@formatter:off
 	private List<String> operations = List.of(
-			"1) Add a project"
+			"1) Add a project",
+			"2) List all projects",
+			"3) Select a project"
 	);
 	//@formatter:on	
 	private Scanner scanner = new Scanner(System.in);	
