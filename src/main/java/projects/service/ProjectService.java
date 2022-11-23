@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import projects.dao.ProjectDao;
 import projects.entity.Project;
+import projects.exception.DbException;
 
 public class ProjectService {
 	private ProjectDao projectDao = new ProjectDao();
@@ -18,6 +19,19 @@ public class ProjectService {
 	}
 	public Project fetchProjectByID(Integer projectID) {
 		return projectDao.fetchProjectById(projectID).orElseThrow(() -> new NoSuchElementException("Project with Project Id="+projectID+" does not exist."));
+	}
+	public void modifyProjectDetails(Project project) {
+		if(!projectDao.modifyProjectDetails(project)) {
+			throw new DbException("Project with ID="+project.getProjectId()+" does not exist.");
+		}
+		
+	}
+	public void deleteProject(Integer projectId) {
+		boolean result = projectDao.deleteProject(projectId);
+		if(!result) {
+			throw new DbException("Project with ID " + projectId + " does not exist.");
+		}
+		
 	}
 
 }
